@@ -3,6 +3,7 @@ import axios from "axios";
 import { CircularProgress, IconButton, Box, Typography } from "@mui/material";
 import { DataGrid, GridColDef, GridRowsProp } from "@mui/x-data-grid";
 import DeleteIcon from "@mui/icons-material/Delete";
+import { format } from "date-fns";
 
 const HOST = "https://test.v5.pryaniky.com";
 
@@ -72,6 +73,10 @@ const TablePage: React.FC<{ token: string }> = ({
       headerName: "Дата подписи компании",
       width: 200,
       editable: true,
+      renderCell: (params) => {
+        const date = new Date(params.value);
+        return format(date, "dd.MM.yyyy");
+      },
     },
     {
       field: "companySignatureName",
@@ -108,6 +113,10 @@ const TablePage: React.FC<{ token: string }> = ({
       headerName: "Дата подписи сотрудника",
       width: 200,
       editable: true,
+      renderCell: (params) => {
+        const date = new Date(params.value);
+        return format(date, "dd.MM.yyyy");
+      },
     },
     {
       field: "employeeSignatureName",

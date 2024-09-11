@@ -6,10 +6,10 @@ import {
   Routes,
   Navigate,
 } from "react-router-dom";
+import { Toaster } from "sonner";
 
 import LoginPage from "./routes/LoginPage";
 import TablePage from "./routes/TablePage";
-import { Toaster } from "sonner";
 
 function App() {
   const [token, setToken] = useState<string>("");
