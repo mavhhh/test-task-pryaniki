@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import "./App.css";
-import LoginPage from "./routes/LoginPage";
 import {
   BrowserRouter as Router,
   Route,
@@ -8,13 +7,29 @@ import {
   Navigate,
 } from "react-router-dom";
 
+import LoginPage from "./routes/LoginPage";
+import TablePage from "./routes/TablePage";
+
 function App() {
   const [token, setToken] = useState<string>("");
 
   return (
-    <div className="App">
-      <LoginPage token={token} setToken={setToken} />
-    </div>
+    <Router>
+      <Routes>
+        <Route
+          path="/login"
+          element={<LoginPage token={token} setToken={setToken} />}
+        />
+        <Route
+          path="/table"
+          element={token ? <TablePage /> : <Navigate to="/login" />}
+        />
+        <Route
+          path="*"
+          element={<Navigate to={token ? "/table" : "/login"} />}
+        />
+      </Routes>
+    </Router>
   );
 }
 

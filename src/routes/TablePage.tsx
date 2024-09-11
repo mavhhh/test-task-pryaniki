@@ -1,7 +1,7 @@
-import React from 'react'
+import React from "react";
 
-export const TablePage = () => {
-  return (
-    <div>TablePage</div>
-  )
-}
+const TablePage = () => {
+  return <div>TablePage</div>;
+};
+
+export default TablePage;

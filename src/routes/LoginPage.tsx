@@ -9,6 +9,7 @@ import {
 } from "@mui/material";
 import { LockOutlined } from "@mui/icons-material";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 const HOST = "https://test.v5.pryaniky.com";
 
@@ -27,6 +28,8 @@ const LoginPage: React.FC<LoginPageProps> = ({
   token,
   setToken,
 }: LoginPageProps) => {
+  const navigate = useNavigate();
+
   const [user, setUser] = useState<string>("");
   const [password, setPassword] = useState<string>("");
 
@@ -47,7 +50,9 @@ const LoginPage: React.FC<LoginPageProps> = ({
         }
       );
       const token = response.data?.data?.token;
-      setToken(token);
+      await setToken(token);
+      navigate("/table");
+
       console.log("response:", response?.data?.data);
     } catch (err) {
       console.log(err);
