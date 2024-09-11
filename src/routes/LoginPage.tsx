@@ -1,4 +1,8 @@
 import React, { useState, ChangeEvent, FormEvent } from "react";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import { toast } from "sonner";
+
 import {
   TextField,
   Button,
@@ -8,8 +12,6 @@ import {
   Avatar,
 } from "@mui/material";
 import { LockOutlined } from "@mui/icons-material";
-import axios from "axios";
-import { useNavigate } from "react-router-dom";
 
 const HOST = "https://test.v5.pryaniky.com";
 
@@ -17,6 +19,7 @@ type LoginResponse = {
   data: {
     token: string;
   };
+  error_text: string;
 };
 
 type LoginPageProps = {
@@ -37,7 +40,7 @@ const LoginPage: React.FC<LoginPageProps> = ({
     e.preventDefault();
 
     if (!/^user\d+$/.test(user)) {
-      console.log("Логин должен быть в формате user{число}, например: user23");
+      toast.error("Неверный логин! Используйте: user{N}");
       return;
     }
 
@@ -49,11 +52,14 @@ const LoginPage: React.FC<LoginPageProps> = ({
           password: password,
         }
       );
+      console.log("response:", response);
+
+      const errorText = response.data?.error_text;
+      !!errorText && toast.error("Неверный логин или пароль!");
+
       const token = response.data?.data?.token;
       await setToken(token);
       navigate("/table");
-
-      console.log("response:", response?.data?.data);
     } catch (err) {
       console.log(err);
     }
@@ -108,12 +114,7 @@ const LoginPage: React.FC<LoginPageProps> = ({
             value={password}
             onChange={handlePasswordChange}
           />
-          <Button
-            type="submit"
-            fullWidth
-            variant="contained"
-            sx={{ mt: 3, mb: 2 }}
-          >
+          <Button type="submit" fullWidth variant="contained" sx={{ mt: 3 }}>
             Sign In
           </Button>
         </Box>

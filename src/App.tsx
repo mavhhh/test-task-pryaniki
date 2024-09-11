@@ -9,12 +9,14 @@ import {
 
 import LoginPage from "./routes/LoginPage";
 import TablePage from "./routes/TablePage";
+import { Toaster } from "sonner";
 
 function App() {
   const [token, setToken] = useState<string>("");
 
   return (
     <Router>
+      <Toaster position="bottom-right" />
       <Routes>
         <Route
           path="/login"
@@ -22,13 +24,16 @@ function App() {
         />
         <Route
           path="/table"
-          element={token ? <TablePage /> : <Navigate to="/login" />}
+          element={
+            token ? <TablePage token={token} /> : <Navigate to="/login" />
+          }
         />
         <Route
           path="*"
           element={<Navigate to={token ? "/table" : "/login"} />}
         />
       </Routes>
+      <Toaster />
     </Router>
   );
 }
