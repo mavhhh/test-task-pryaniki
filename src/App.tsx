@@ -25,14 +25,14 @@ function App() {
       <Toaster position="bottom-right" />
       <Header />
       <Routes>
-        <Route path="/login" element={<LoginPage />} />
+        <Route path="test-task-pryaniki/login" element={<LoginPage />} />
         <Route
-          path="/table"
-          element={token ? <TablePage /> : <Navigate to="/login" />}
+          path="test-task-pryaniki/table"
+          element={token ? <TablePage /> : <Navigate to="test-task-pryaniki/login" />}
         />
         <Route
           path="*"
-          element={<Navigate to={token ? "/table" : "/login"} />}
+          element={<Navigate to={token ? "test-task-pryaniki/table" : "test-task-pryaniki/login"} />}
         />
       </Routes>
       <Toaster />
