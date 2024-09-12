@@ -8,8 +8,9 @@ export const getTable = (token: string) => {
 };
 
 export const updateRow = (token: string, newRow: TableRow) => {
-  return api.put(
-    "/ru/data/v3/testmethods/docs/userdocs/set/",
+  const { id } = newRow;
+  return api.post(
+    `/ru/data/v3/testmethods/docs/userdocs/set/${id}`,
     {
       ...newRow,
     },

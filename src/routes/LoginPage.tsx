@@ -36,7 +36,6 @@ const LoginPage: React.FC = () => {
         password: password,
       })
       
-
       const errorText = response.data?.error_text;
       if (errorText) {
         toast.error("Неверный логин или пароль!");

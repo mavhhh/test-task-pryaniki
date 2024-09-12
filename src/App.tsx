@@ -6,13 +6,12 @@ import {
   Navigate,
 } from "react-router-dom";
 import { Toaster } from "sonner";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 
 import LoginPage from "./routes/LoginPage";
 import TablePage from "./routes/TablePage";
 import { RootState } from "./redux/store";
 import { Header } from "./components/Header";
-
 
 function App() {
   const { token } = useSelector((state: RootState) => state.token);

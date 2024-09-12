@@ -32,9 +32,14 @@ const TablePage = () => {
   const [isAdding, setIsAdding] = useState(false);
 
   const handleFetchData = async () => {
-    setLoading(true);
-    await dispatch(fetchTable(token));
-    setLoading(false);
+    try {
+      setLoading(true);
+      await dispatch(fetchTable(token));
+      setLoading(false);
+    } catch (err) {
+      toast.error("Ошибка при запросе данных!");
+      console.log(err);
+    }
   };
 
   useEffect(() => {
