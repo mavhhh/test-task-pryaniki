@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { format } from "date-fns";
+import { toast } from "sonner";
 
-import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "../redux/store";
+import { useSelector } from "react-redux";
+import { RootState, useAppDispatch } from "../redux/store";
+import { deleteRowByID, fetchTable, TableRow } from "../redux/slices/table";
 
 import { TableItemForm } from "../components/TableItemForm";
 import {
@@ -15,45 +17,33 @@ import {
   Stack,
   Modal,
 } from "@mui/material";
-import { DataGrid, GridColDef, GridRowsProp } from "@mui/x-data-grid";
+import { DataGrid, GridColDef } from "@mui/x-data-grid";
 import AddBoxIcon from "@mui/icons-material/AddBox";
 import DeleteIcon from "@mui/icons-material/Delete";
-import { deleteRowByID, setTable } from "../redux/slices/table";
-import { toast } from "sonner";
 
 const HOST = "https://test.v5.pryaniky.com";
 
-const TablePage: React.FC = () => {
-  const dispatch = useDispatch();
+const TablePage = () => {
+  const dispatch = useAppDispatch();
   const { token } = useSelector((state: RootState) => state.token);
   const { table } = useSelector((state: RootState) => state.table);
 
   const [loading, setLoading] = useState(true);
   const [isAdding, setIsAdding] = useState(false);
 
-  const fetchData = async () => {
+  const handleFetchData = async () => {
     setLoading(true);
-    try {
-      const response = await axios.get(
-        `${HOST}/ru/data/v3/testmethods/docs/userdocs/get`,
-        {
-          headers: {
-            "x-auth": token,
-          },
-        }
-      );
-      const { data } = response.data;
-      dispatch(setTable(data));
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setLoading(false);
-    }
+    await dispatch(fetchTable(token));
+    setLoading(false);
   };
+
+  useEffect(() => {
+    handleFetchData();
+  }, []);
 
   const handleDelete = async (id: string) => {
     try {
-      const response = await axios.delete(
+      const response = await axios.post(
         `${HOST}/ru/data/v3/testmethods/docs/userdocs/delete/${id}`,
         {
           headers: {
@@ -73,9 +63,51 @@ const TablePage: React.FC = () => {
     }
   };
 
-  useEffect(() => {
-    fetchData();
-  }, []);
+  const handleRowUpdate = async (updatedRow: TableRow) => {
+    const {
+      id,
+      companySigDate,
+      companySignatureName,
+      documentName,
+      documentStatus,
+      documentType,
+      employeeNumber,
+      employeeSigDate,
+      employeeSignatureName,
+    } = updatedRow;
+
+    try {
+      const response = await axios.post(
+        `${HOST}/ru/data/v3/testmethods/docs/userdocs/set/${id}`,
+        {
+          companySigDate,
+          companySignatureName,
+          documentName,
+          documentStatus,
+          documentType,
+          employeeNumber,
+          employeeSigDate,
+          employeeSignatureName,
+        },
+        {
+          headers: {
+            "x-auth": token,
+          },
+        }
+      );
+
+      if (response.data.error_code === 0) {
+        toast.success("Запись обновлена.");
+      } else {
+        toast.error("Ошибка при обновлении записи!");
+      }
+    } catch (err) {
+      toast.error("Ошибка при обновлении записи!");
+      console.error(err);
+    }
+
+    return updatedRow;
+  };
 
   const columns: GridColDef[] = [
     {
@@ -164,22 +196,19 @@ const TablePage: React.FC = () => {
             alignItems: "center",
           }}
         >
-          Таблица данных
+          Таблица
         </Typography>
-        <Button
-          onClick={() => setIsAdding(true)}
-          variant="outlined"
-          sx={{ height: "2.5rem" }}
-        >
-          <AddBoxIcon sx={{ marginRight: ".2rem" }} />
+        <Button onClick={() => setIsAdding(true)} variant="outlined">
+          <AddBoxIcon sx={{ marginRight: ".5rem" }} />
           Добавить запись
         </Button>
-        {loading && <CircularProgress />}
+        {loading && <CircularProgress size={30} />}
       </Stack>
       <Box sx={{ height: 500, width: "100%" }}>
         <DataGrid
           rows={table}
           columns={columns}
+          processRowUpdate={handleRowUpdate}
           sx={{ width: "100vw", height: "calc(100lvh - 4rem)" }}
         />
       </Box>

@@ -51,11 +51,13 @@ const LoginPage: React.FC = () => {
       console.log("response:", response);
 
       const errorText = response.data?.error_text;
-      !!errorText && toast.error("Неверный логин или пароль!");
-
-      const newToken = response.data?.data?.token;
-      await dispatch(setToken(newToken));
-      navigate("/table");
+      if (errorText) {
+        toast.error("Неверный логин или пароль!");
+      } else {
+        const newToken = response.data?.data?.token;
+        await dispatch(setToken(newToken));
+        navigate("/table");
+      }
     } catch (err) {
       console.log(err);
     }

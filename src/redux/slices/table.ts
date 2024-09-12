@@ -15,6 +15,12 @@ export type TableRow = {
   employeeSignatureName: string;
 };
 
+export type TableState = {
+  table: TableRow[];
+  status: "pending" | "fulfilled" | "rejected";
+  error: any;
+};
+
 export const fetchTable = createAsyncThunk(
   "table/fetchTable",
   async (token: string) => {
@@ -30,12 +36,6 @@ export const fetchTable = createAsyncThunk(
     return data;
   }
 );
-
-export type TableState = {
-  table: TableRow[];
-  status: "pending" | "fulfilled" | "rejected";
-  error: any;
-};
 
 const initialState: TableState = { table: [], status: "pending", error: null };
 

@@ -11,6 +11,7 @@ import { useDispatch, useSelector } from "react-redux";
 import LoginPage from "./routes/LoginPage";
 import TablePage from "./routes/TablePage";
 import { RootState } from "./redux/store";
+import { Header } from "./components/Header";
 
 function App() {
   const dispatch = useDispatch();
@@ -23,6 +24,7 @@ function App() {
   return (
     <Router>
       <Toaster position="bottom-right" />
+      <Header />
       <Routes>
         <Route path="/login" element={<LoginPage />} />
         <Route
