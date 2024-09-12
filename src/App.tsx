@@ -17,10 +17,6 @@ import { Header } from "./components/Header";
 function App() {
   const { token } = useSelector((state: RootState) => state.token);
 
-  useEffect(() => {
-    console.log(token);
-  }, [token]);
-
   return (
     <HashRouter basename="/test-task-pryaniki">
       <Toaster position="bottom-right" />
