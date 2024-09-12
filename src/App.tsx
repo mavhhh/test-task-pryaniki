@@ -22,7 +22,7 @@ function App() {
   }, [token]);
 
   return (
-    <HashRouter>
+    <HashRouter basename="/test-task-pryaniki">
       <Toaster position="bottom-right" />
       <Header />
       <Routes>
