@@ -1,6 +1,5 @@
 import React, { useState, ChangeEvent, FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
 import { toast } from "sonner";
 
 import {
@@ -12,18 +11,9 @@ import {
   Avatar,
 } from "@mui/material";
 import { LockOutlined } from "@mui/icons-material";
-import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "../redux/store";
-import { setToken } from "../redux/slices/token";
-
-const HOST = "https://test.v5.pryaniky.com";
-
-type LoginResponse = {
-  data: {
-    token: string;
-  };
-  error_text: string;
-};
+import { useDispatch } from "react-redux";
+import { setToken } from "../redux/slices/tokenSlice";
+import { login } from "../api/auth";
 
 const LoginPage: React.FC = () => {
   const dispatch = useDispatch();
@@ -41,14 +31,11 @@ const LoginPage: React.FC = () => {
     }
 
     try {
-      const response = await axios.post<LoginResponse>(
-        `${HOST}/ru/data/v3/testmethods/docs/login`,
-        {
-          username: user,
-          password: password,
-        }
-      );
-      console.log("response:", response);
+      const response = await login({
+        username: user,
+        password: password,
+      })
+      
 
       const errorText = response.data?.error_text;
       if (errorText) {
@@ -59,6 +46,7 @@ const LoginPage: React.FC = () => {
         navigate("/table");
       }
     } catch (err) {
+      toast.error('Ошибка при входе!')
       console.log(err);
     }
   };
@@ -85,7 +73,7 @@ const LoginPage: React.FC = () => {
           <LockOutlined />
         </Avatar>
         <Typography component="h1" variant="h5">
-          Sign in
+          Вход
         </Typography>
         <Box component="form" onSubmit={handleLogin} noValidate sx={{ mt: 1 }}>
           <TextField
@@ -113,7 +101,7 @@ const LoginPage: React.FC = () => {
             onChange={handlePasswordChange}
           />
           <Button type="submit" fullWidth variant="contained" sx={{ mt: 3 }}>
-            Sign In
+            Войти
           </Button>
         </Box>
       </Box>

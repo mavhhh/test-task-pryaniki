@@ -13,8 +13,8 @@ import TablePage from "./routes/TablePage";
 import { RootState } from "./redux/store";
 import { Header } from "./components/Header";
 
+
 function App() {
-  const dispatch = useDispatch();
   const { token } = useSelector((state: RootState) => state.token);
 
   useEffect(() => {

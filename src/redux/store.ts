@@ -1,6 +1,6 @@
 import { configureStore } from "@reduxjs/toolkit";
-import table from "./slices/table";
-import token from "./slices/token";
+import table from "./slices/tableSlice";
+import token from "./slices/tokenSlice";
 import { useDispatch } from "react-redux";
 
 export const store = configureStore({

@@ -1,37 +1,12 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import axios from "axios";
+import { getTable } from "../../api/table";
 
-const HOST = "https://test.v5.pryaniky.com";
-
-export type TableRow = {
-  id?: string;
-  companySigDate: string | null;
-  companySignatureName: string;
-  documentName: string;
-  documentStatus: string;
-  documentType: string;
-  employeeNumber: string;
-  employeeSigDate: string | null;
-  employeeSignatureName: string;
-};
-
-export type TableState = {
-  table: TableRow[];
-  status: "pending" | "fulfilled" | "rejected";
-  error: any;
-};
+import type { TableState } from "../../types/table";
 
 export const fetchTable = createAsyncThunk(
   "table/fetchTable",
   async (token: string) => {
-    const response = await axios.get(
-      `${HOST}/ru/data/v3/testmethods/docs/userdocs/get`,
-      {
-        headers: {
-          "x-auth": token,
-        },
-      }
-    );
+    const response = await getTable(token);
     const { data } = response.data;
     return data;
   }

@@ -1,11 +1,10 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
 import { format } from "date-fns";
 import { toast } from "sonner";
 
 import { useSelector } from "react-redux";
 import { RootState, useAppDispatch } from "../redux/store";
-import { deleteRowByID, fetchTable, TableRow } from "../redux/slices/table";
+import { deleteRowByID, fetchTable } from "../redux/slices/tableSlice";
 
 import { TableItemForm } from "../components/TableItemForm";
 import {
@@ -21,7 +20,8 @@ import { DataGrid, GridColDef } from "@mui/x-data-grid";
 import AddBoxIcon from "@mui/icons-material/AddBox";
 import DeleteIcon from "@mui/icons-material/Delete";
 
-const HOST = "https://test.v5.pryaniky.com";
+import type { TableRow } from "../types/table";
+import { deleteRowById, updateRow } from "../api/table";
 
 const TablePage = () => {
   const dispatch = useAppDispatch();
@@ -43,18 +43,12 @@ const TablePage = () => {
 
   const handleDelete = async (id: string) => {
     try {
-      const response = await axios.post(
-        `${HOST}/ru/data/v3/testmethods/docs/userdocs/delete/${id}`,
-        {
-          headers: {
-            "x-auth": token,
-          },
-        }
-      );
-      if (response.data.error_code === 0) {
+      const response = await deleteRowById(token, id);
+      if (response?.data?.error_code === 0) {
         toast.success("Запись удалена.");
         dispatch(deleteRowByID(id));
       } else {
+        console.log(response);
         toast.error("Ошибка при удалении записи!");
       }
     } catch (err) {
@@ -64,39 +58,20 @@ const TablePage = () => {
   };
 
   const handleRowUpdate = async (updatedRow: TableRow) => {
-    const {
-      id,
-      companySigDate,
-      companySignatureName,
-      documentName,
-      documentStatus,
-      documentType,
-      employeeNumber,
-      employeeSigDate,
-      employeeSignatureName,
-    } = updatedRow;
+    const originalRow = table.find(
+      (row) => row.id === updatedRow.id
+    ) as TableRow;
+
+    const isChanged =
+      JSON.stringify(originalRow) !== JSON.stringify(updatedRow);
+
+    if (!isChanged) {
+      return updatedRow;
+    }
 
     try {
-      const response = await axios.post(
-        `${HOST}/ru/data/v3/testmethods/docs/userdocs/set/${id}`,
-        {
-          companySigDate,
-          companySignatureName,
-          documentName,
-          documentStatus,
-          documentType,
-          employeeNumber,
-          employeeSigDate,
-          employeeSignatureName,
-        },
-        {
-          headers: {
-            "x-auth": token,
-          },
-        }
-      );
-
-      if (response.data.error_code === 0) {
+      const response = await updateRow(token, { ...updatedRow });
+      if (response?.data?.error_code === 0) {
         toast.success("Запись обновлена.");
       } else {
         toast.error("Ошибка при обновлении записи!");

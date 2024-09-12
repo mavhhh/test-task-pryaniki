@@ -3,16 +3,15 @@ import { parseISO } from "date-fns";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFnsV3";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { ru } from "date-fns/locale/ru";
-import axios from "axios";
 
 import { Box, Button, Container, Stack, TextField } from "@mui/material";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { toast } from "sonner";
 import { useSelector } from "react-redux";
 import { RootState, useAppDispatch } from "../redux/store";
-import { fetchTable } from "../redux/slices/table";
-
-const HOST = "https://test.v5.pryaniky.com";
+import { fetchTable } from "../redux/slices/tableSlice";
+import { addRow } from "../api/table";
+import { TableRow } from "../types/table";
 
 const style = {
   width: "max(300px, 70vw)",
@@ -44,25 +43,8 @@ export const TableItemForm = ({ onSuccess }: { onSuccess: () => void }) => {
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    const newRow = {
-      companySigDate: newRecord.companySigDate,
-      companySignatureName: newRecord.companySignatureName,
-      documentName: newRecord.documentName,
-      documentStatus: newRecord.documentStatus,
-      documentType: newRecord.documentType,
-      employeeNumber: newRecord.employeeNumber,
-      employeeSigDate: newRecord.employeeSigDate,
-      employeeSignatureName: newRecord.employeeSignatureName,
-    };
     try {
-      const response = await axios.post(
-        `${HOST}/ru/data/v3/testmethods/docs/userdocs/create`,
-        { ...newRow },
-        {
-          headers: { "x-auth": token },
-        }
-      );
-
+      const response = await addRow(token, newRecord as TableRow);
       if (response.status === 200) {
         toast.success("Запись успешно добавлена.");
         dispatch(fetchTable(token));

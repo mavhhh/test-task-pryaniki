@@ -2,7 +2,7 @@ import React from "react";
 import { Box, Button } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../redux/store";
-import { setToken } from "../redux/slices/token";
+import { setToken } from "../redux/slices/tokenSlice";
 
 export const Header = () => {
   const dispatch = useDispatch();
