@@ -1,7 +1,9 @@
 import { createSlice } from "@reduxjs/toolkit";
 
+const storedToken = localStorage.getItem("pryaniki-token");
+
 const initialState = {
-  token: "",
+  token: storedToken || "",
 };
 
 const tokenSlice = createSlice({
@@ -10,6 +12,7 @@ const tokenSlice = createSlice({
   reducers: {
     setToken(state, action) {
       state.token = action.payload;
+      localStorage.setItem("pryaniki-token", action.payload);
     },
   },
 });
