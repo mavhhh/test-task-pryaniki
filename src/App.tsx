@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import {
-  BrowserRouter as Router,
+  BrowserRouter as HashRouter ,
   Route,
   Routes,
   Navigate,
@@ -10,6 +10,7 @@ import { useSelector } from "react-redux";
 
 import LoginPage from "./routes/LoginPage";
 import TablePage from "./routes/TablePage";
+
 import { RootState } from "./redux/store";
 import { Header } from "./components/Header";
 
@@ -21,22 +22,22 @@ function App() {
   }, [token]);
 
   return (
-    <Router>
+    <HashRouter>
       <Toaster position="bottom-right" />
       <Header />
       <Routes>
-        <Route path="test-task-pryaniki/login" element={<LoginPage />} />
+        <Route path="/test-task-pryaniki/login" element={<LoginPage />} />
         <Route
-          path="test-task-pryaniki/table"
-          element={token ? <TablePage /> : <Navigate to="test-task-pryaniki/login" />}
+          path="/test-task-pryaniki/table"
+          element={token ? <TablePage /> : <Navigate to="/test-task-pryaniki/login" />}
         />
         <Route
           path="*"
-          element={<Navigate to={token ? "test-task-pryaniki/table" : "test-task-pryaniki/login"} />}
+          element={<Navigate to={token ? "/test-task-pryaniki/table" : "/test-task-pryaniki/login"} />}
         />
       </Routes>
       <Toaster />
-    </Router>
+    </HashRouter>
   );
 }
 
