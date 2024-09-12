@@ -1,5 +1,4 @@
-import React, { useState } from "react";
-import "./App.css";
+import React, { useEffect, useState } from "react";
 import {
   BrowserRouter as Router,
   Route,
@@ -7,26 +6,28 @@ import {
   Navigate,
 } from "react-router-dom";
 import { Toaster } from "sonner";
+import { useDispatch, useSelector } from "react-redux";
 
 import LoginPage from "./routes/LoginPage";
 import TablePage from "./routes/TablePage";
+import { RootState } from "./redux/store";
 
 function App() {
-  const [token, setToken] = useState<string>("");
+  const dispatch = useDispatch();
+  const { token } = useSelector((state: RootState) => state.token);
+
+  useEffect(() => {
+    console.log(token);
+  }, [token]);
 
   return (
     <Router>
       <Toaster position="bottom-right" />
       <Routes>
-        <Route
-          path="/login"
-          element={<LoginPage token={token} setToken={setToken} />}
-        />
+        <Route path="/login" element={<LoginPage />} />
         <Route
           path="/table"
-          element={
-            token ? <TablePage token={token} /> : <Navigate to="/login" />
-          }
+          element={token ? <TablePage /> : <Navigate to="/login" />}
         />
         <Route
           path="*"

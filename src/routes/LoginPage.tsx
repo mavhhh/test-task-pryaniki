@@ -12,6 +12,9 @@ import {
   Avatar,
 } from "@mui/material";
 import { LockOutlined } from "@mui/icons-material";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "../redux/store";
+import { setToken } from "../redux/slices/token";
 
 const HOST = "https://test.v5.pryaniky.com";
 
@@ -22,15 +25,8 @@ type LoginResponse = {
   error_text: string;
 };
 
-type LoginPageProps = {
-  token: string;
-  setToken: React.Dispatch<React.SetStateAction<string>>;
-};
-
-const LoginPage: React.FC<LoginPageProps> = ({
-  token,
-  setToken,
-}: LoginPageProps) => {
+const LoginPage: React.FC = () => {
+  const dispatch = useDispatch();
   const navigate = useNavigate();
 
   const [user, setUser] = useState<string>("");
@@ -57,8 +53,8 @@ const LoginPage: React.FC<LoginPageProps> = ({
       const errorText = response.data?.error_text;
       !!errorText && toast.error("Неверный логин или пароль!");
 
-      const token = response.data?.data?.token;
-      await setToken(token);
+      const newToken = response.data?.data?.token;
+      await dispatch(setToken(newToken));
       navigate("/table");
     } catch (err) {
       console.log(err);

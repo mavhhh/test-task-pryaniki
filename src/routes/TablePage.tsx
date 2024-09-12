@@ -1,31 +1,35 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { CircularProgress, IconButton, Box, Typography } from "@mui/material";
-import { DataGrid, GridColDef, GridRowsProp } from "@mui/x-data-grid";
-import DeleteIcon from "@mui/icons-material/Delete";
 import { format } from "date-fns";
+
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "../redux/store";
+
+import { TableItemForm } from "../components/TableItemForm";
+import {
+  CircularProgress,
+  IconButton,
+  Box,
+  Typography,
+  Button,
+  Stack,
+  Modal,
+} from "@mui/material";
+import { DataGrid, GridColDef, GridRowsProp } from "@mui/x-data-grid";
+import AddBoxIcon from "@mui/icons-material/AddBox";
+import DeleteIcon from "@mui/icons-material/Delete";
+import { deleteRowByID, setTable } from "../redux/slices/table";
+import { toast } from "sonner";
 
 const HOST = "https://test.v5.pryaniky.com";
 
-type DataRow = {
-  id: number;
-  companySigDate: string;
-  companySignatureName: string;
-  documentName: string;
-  documentStatus: string;
-  documentType: string;
-  employeeNumber: string;
-  employeeSigDate: string;
-  employeeSignatureName: string;
-};
+const TablePage: React.FC = () => {
+  const dispatch = useDispatch();
+  const { token } = useSelector((state: RootState) => state.token);
+  const { table } = useSelector((state: RootState) => state.table);
 
-const TablePage: React.FC<{ token: string }> = ({
-  token,
-}: {
-  token: string;
-}) => {
-  const [data, setData] = useState<GridRowsProp<DataRow>>([]);
   const [loading, setLoading] = useState(true);
+  const [isAdding, setIsAdding] = useState(false);
 
   const fetchData = async () => {
     setLoading(true);
@@ -38,7 +42,8 @@ const TablePage: React.FC<{ token: string }> = ({
           },
         }
       );
-      setData(response.data.data);
+      const { data } = response.data;
+      dispatch(setTable(data));
     } catch (err) {
       console.error(err);
     } finally {
@@ -46,9 +51,9 @@ const TablePage: React.FC<{ token: string }> = ({
     }
   };
 
-  const handleDelete = async (id: number) => {
+  const handleDelete = async (id: string) => {
     try {
-      await axios.delete(
+      const response = await axios.delete(
         `${HOST}/ru/data/v3/testmethods/docs/userdocs/delete/${id}`,
         {
           headers: {
@@ -56,9 +61,15 @@ const TablePage: React.FC<{ token: string }> = ({
           },
         }
       );
-      setData(data.filter((row) => row.id !== id));
+      if (response.data.error_code === 0) {
+        toast.success("Запись удалена.");
+        dispatch(deleteRowByID(id));
+      } else {
+        toast.error("Ошибка при удалении записи!");
+      }
     } catch (err) {
-      console.error(err);
+      toast.error("Ошибка при удалении записи!");
+      console.log(err);
     }
   };
 
@@ -67,7 +78,6 @@ const TablePage: React.FC<{ token: string }> = ({
   }, []);
 
   const columns: GridColDef[] = [
-    { field: "id", headerName: "ID", width: 100, editable: true },
     {
       field: "companySigDate",
       headerName: "Дата подписи компании",
@@ -81,31 +91,31 @@ const TablePage: React.FC<{ token: string }> = ({
     {
       field: "companySignatureName",
       headerName: "Подпись компании",
-      width: 150,
+      width: 160,
       editable: true,
     },
     {
       field: "documentName",
       headerName: "Название документа",
-      width: 170,
+      width: 180,
       editable: true,
     },
     {
       field: "documentStatus",
       headerName: "Статус документа",
-      width: 150,
+      width: 160,
       editable: true,
     },
     {
       field: "documentType",
       headerName: "Тип документа",
-      width: 150,
+      width: 160,
       editable: true,
     },
     {
       field: "employeeNumber",
       headerName: "Номер сотрудника",
-      width: 150,
+      width: 160,
       editable: true,
     },
     {
@@ -127,7 +137,7 @@ const TablePage: React.FC<{ token: string }> = ({
     {
       field: "actions",
       headerName: "Действия",
-      width: 90,
+      width: 100,
       renderCell: (params) => (
         <Box sx={{ textAlign: "center" }}>
           <IconButton onClick={() => handleDelete(params.row.id)}>
@@ -139,31 +149,41 @@ const TablePage: React.FC<{ token: string }> = ({
   ];
 
   return (
-    <div>
-      <Typography
-        component="h1"
-        variant="h5"
-        sx={{
-          marginLeft: "1rem",
-          height: "5vh",
-          display: "flex",
-          alignItems: "center",
-        }}
-      >
-        Таблица данных
-      </Typography>
-      {loading ? (
-        <CircularProgress />
-      ) : (
-        <Box sx={{ height: 600, width: "100%" }}>
-          <DataGrid
-            rows={data}
-            columns={columns}
-            sx={{ width: "100vw", height: "95vh" }}
-          />
-        </Box>
-      )}
-    </div>
+    <Box>
+      <Modal open={isAdding} onClose={() => setIsAdding(false)}>
+        <TableItemForm onSuccess={() => setIsAdding(false)} />
+      </Modal>
+      <Stack alignItems={"center"} direction="row" gap={3}>
+        <Typography
+          component="h1"
+          variant="h5"
+          sx={{
+            marginLeft: "1rem",
+            height: "4rem",
+            display: "flex",
+            alignItems: "center",
+          }}
+        >
+          Таблица данных
+        </Typography>
+        <Button
+          onClick={() => setIsAdding(true)}
+          variant="outlined"
+          sx={{ height: "2.5rem" }}
+        >
+          <AddBoxIcon sx={{ marginRight: ".2rem" }} />
+          Добавить запись
+        </Button>
+        {loading && <CircularProgress />}
+      </Stack>
+      <Box sx={{ height: 500, width: "100%" }}>
+        <DataGrid
+          rows={table}
+          columns={columns}
+          sx={{ width: "100vw", height: "calc(100lvh - 4rem)" }}
+        />
+      </Box>
+    </Box>
   );
 };
 
