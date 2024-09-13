@@ -53,7 +53,7 @@ const TablePage = () => {
         toast.success("Запись удалена.");
         dispatch(deleteRowByID(id));
       } else {
-        console.log(response);
+
         toast.error("Ошибка при удалении записи!");
       }
     } catch (err) {

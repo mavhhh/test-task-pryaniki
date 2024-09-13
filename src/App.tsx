@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import {
-  BrowserRouter as HashRouter ,
+  HashRouter as Router,
   Route,
   Routes,
   Navigate,
@@ -18,22 +18,32 @@ function App() {
   const { token } = useSelector((state: RootState) => state.token);
 
   return (
-    <HashRouter basename="/test-task-pryaniki">
+    <Router basename="/test-task-pryaniki">
       <Toaster position="bottom-right" />
       <Header />
       <Routes>
         <Route path="/test-task-pryaniki/login" element={<LoginPage />} />
         <Route
           path="/test-task-pryaniki/table"
-          element={token ? <TablePage /> : <Navigate to="/test-task-pryaniki/login" />}
+          element={
+            token ? <TablePage /> : <Navigate to="/test-task-pryaniki/login" />
+          }
         />
         <Route
           path="*"
-          element={<Navigate to={token ? "/test-task-pryaniki/table" : "/test-task-pryaniki/login"} />}
+          element={
+            <Navigate
+              to={
+                token
+                  ? "/test-task-pryaniki/table"
+                  : "/test-task-pryaniki/login"
+              }
+            />
+          }
         />
       </Routes>
       <Toaster />
-    </HashRouter>
+    </Router>
   );
 }
 
